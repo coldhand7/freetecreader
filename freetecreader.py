@@ -69,6 +69,8 @@ if __name__ == "__main__":
     timeout_ms = 1000
     sample_interval_minutes = 5 # TODO: read interval from settings or rather datasets
 
+    print("Used HIDAPI lib: "+hidapi.lib)
+
     mode = "device"
     if (len(sys.argv) == 3):
         if (sys.argv[1] in ["dump", "read"]):
@@ -78,7 +80,11 @@ if __name__ == "__main__":
 
     data = None # TODO: in device mode, data should be supplied by a generator, lazily reading on-demand only
     if (mode in ["device", "dump"]):
-        hd = hidapi.Device(vendor_id=vendor_id, product_id=product_id)
+        if "hidapi-libusb" in hidapi.lib:
+            deviceInfo = next(hidapi.enumerate(vendor_id=vendor_id,product_id=product_id))
+            hd = hidapi.Device(info=deviceInfo)
+        else:
+            hd = hidapi.Device(vendor_id=vendor_id, product_id=product_id)
         data = create_dump(hd)
         if (mode == "dump"):
             with open(sys.argv[2],'wb') as f:
