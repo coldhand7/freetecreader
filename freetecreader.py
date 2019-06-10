@@ -5,6 +5,9 @@ import binascii
 import sys
 import datetime
 import csv
+import locale
+
+locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
 
 def request(hd, addr = None, length = None, msg_bytes = None):
     if (not msg_bytes):
@@ -64,7 +67,7 @@ def convert_measurement(measurement):
     temperature = int.from_bytes(measurement[1:3], byteorder='big')*0.1-50
     return (humidity, temperature)
 
-def writeCSV(file, data_set_zip):
+def write_CSV(file, data_set_zip):
     number = 0
     with open(file, 'w', newline='') as csvfile:
         csv_writer = csv.writer(csvfile, csv.excel_tab)
@@ -77,7 +80,7 @@ def writeCSV(file, data_set_zip):
                     measurement_date = series_start_date+datetime.timedelta(
                         minutes=sample_interval_minutes*i
                     )
-                csv_writer.writerow([number, measurement_date, "%.1f"%temperature, humidity])
+                csv_writer.writerow([number, measurement_date, locale.format("%.1f",temperature), humidity])
         
 
 if __name__ == "__main__":
@@ -135,4 +138,4 @@ if __name__ == "__main__":
     measurements = get_chunks(data[memory_map["series"][0]:], 3)
     data_set_zip = zip(series_counts, series_dates)
     now = datetime.datetime.now()
-    writeCSV("DataLogger-%s-%s.csv"%(device_id, datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")), data_set_zip)
+    write_CSV("DataLogger-%s-%s.csv"%(device_id, datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")), data_set_zip)
