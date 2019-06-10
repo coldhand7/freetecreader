@@ -4,6 +4,7 @@ import hidapi
 import binascii
 import sys
 import datetime
+import csv
 
 def request(hd, addr = None, length = None, msg_bytes = None):
     if (not msg_bytes):
@@ -63,6 +64,22 @@ def convert_measurement(measurement):
     temperature = int.from_bytes(measurement[1:3], byteorder='big')*0.1-50
     return (humidity, temperature)
 
+def writeCSV(file, data_set_zip):
+    number = 0
+    with open(file, 'w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile, csv.excel_tab)
+        csv_writer.writerow(['Nummer', 'Aufzeichnungszeit', 'Temperatur(°C)', 'Luftfeuchtigkeit(%)'])
+        for series_count, series_start_date in zip(series_counts, series_dates):
+            for i in range(64):
+                humidity, temperature = convert_measurement(next(measurements))
+                if (i <= series_count):
+                    number += 1
+                    measurement_date = series_start_date+datetime.timedelta(
+                        minutes=sample_interval_minutes*i
+                    )
+                csv_writer.writerow([number, measurement_date, "%.1f"%temperature, humidity])
+        
+
 if __name__ == "__main__":
     vendor_id = 0x10c4
     product_id = 0x8468
@@ -97,9 +114,9 @@ if __name__ == "__main__":
         raise RuntimeError("Incorrect device ROM magic number (is %04x, should be 55aa). This software is not meant to be used with your device."%(init_ok))
     if (int.from_bytes(get_field(data, "model"), byteorder='big') != 0x0201):
          raise RuntimeError("Unknown model number.")
-    
+    device_id = binascii.hexlify(get_field(data, "ID")).decode("ascii")
     sys.stderr.write(
-        "Device ID: %s\n"%(binascii.hexlify(get_field(data, "ID")).decode("ascii"))
+        "Device ID: %s\n"%(device_id)
     )
     if (get_field(data, "settings") != binascii.unhexlify('2d012c006414')):
         sys.stderr.write("WARNING: Unknown settings detected (only the exact combination of 24h format, degrees celsius, and 5 minute sample interval was tested). Expect havoc.\n")
@@ -116,14 +133,6 @@ if __name__ == "__main__":
     series_counts = [sc for sc in series_counts if sc != 0xFF]
     series_dates = get_series_dates(data)
     measurements = get_chunks(data[memory_map["series"][0]:], 3)
-    number = 0
-    print("Nummer	Aufzeichnungszeit	Temperatur(°C)	Luftfeuchtigkeit(%)\r")
-    for series_count, series_start_date in zip(series_counts, series_dates):
-        for i in range(64):
-            humidity, temperature = convert_measurement(next(measurements))
-            if (i <= series_count):
-                number += 1
-                measurement_date = series_start_date+datetime.timedelta(
-                    minutes=sample_interval_minutes*i
-                )
-                print("%d\t%s\t%.1f\t%d\r"%(number, measurement_date, temperature, humidity))
+    data_set_zip = zip(series_counts, series_dates)
+    now = datetime.datetime.now()
+    writeCSV("DataLogger-%s-%s.csv"%(device_id, datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")), data_set_zip)
