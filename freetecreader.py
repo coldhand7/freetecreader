@@ -126,4 +126,4 @@ if __name__ == "__main__":
                 measurement_date = series_start_date+datetime.timedelta(
                     minutes=sample_interval_minutes*i
                 )
-                print(" %d\t %s\t %.1f\t %d\r"%(number, measurement_date, temperature, humidity))
+                print("%d\t%s\t%.1f\t%d\r"%(number, measurement_date, temperature, humidity))
