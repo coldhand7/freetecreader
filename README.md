@@ -11,7 +11,7 @@ Bitte beachten: Diese Software funktioniert zwar für das mir vorliegende Gerät
 USB-Permission
 --------------
 Um die Berechtigungen für den USB-Logger korrekt zu setzen, muss eine udev Regel eingerichtet werden:
-- Kopieren von https://github.com/coldhand7/freetecreader/blob/master/99-hid_freetec_nc_7004.rules nach /etc/udev/rules.d/
+- Kopieren von [99-hid_freetec_nc_7004.rules](https://github.com/coldhand7/freetecreader/blob/master/99-hid_freetec_nc_7004.rules) nach /etc/udev/rules.d/
 
 Prüfung, ob das USB Gerät erkannt wurde:
 - `dmesg` -> idVendor=10c4, idProduct=8468
