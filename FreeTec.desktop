@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=FreeTec
+Exec=xterm -hold -e /home/marco/Programme/freetecreader/freetecreader.py
+Comment=https://forum.ubuntuusers.de/topic/python-konsolen-script-ueber-gnome-starter-doppelk/
+Terminal=false
+Icon=cinnamon-panel-launcher
+Type=Application
