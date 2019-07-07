@@ -8,6 +8,15 @@ Hilfreich war [dieses Blog](https://baublog.ozerov.de/2011/12/software-fuer-mein
 Getestet unter Linux mit Python 3.6.8 und hidapi 0.2.1.  
 Bitte beachten: Diese Software funktioniert zwar für das mir vorliegende Gerät, ich garantiere aber in keiner Weise für Zuverlässigkeit oder Korrektheit der Daten.
 
+```console
+sudo apt-get install python3-hidapi
+```
+
+Um die Desktop-Verknüpfung [FreeTec.desktop](https://github.com/coldhand7/freetecreader/blob/master/FreeTec.desktop) nutzen zu können ist noch `xterm` notwenig:
+```console
+sudo apt-get install xterm
+```
+
 USB-Permission
 --------------
 Um die Berechtigungen für den USB-Logger korrekt zu setzen, muss eine udev Regel eingerichtet werden:
