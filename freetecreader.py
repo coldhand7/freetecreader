@@ -104,7 +104,8 @@ if __name__ == "__main__":
             deviceInfo = next(hidapi.enumerate(vendor_id=vendor_id,product_id=product_id))
             hd = hidapi.Device(info=deviceInfo)
         else:
-            hd = hidapi.Device(vendor_id=vendor_id, product_id=product_id)
+            deviceInfo = next(hidapi.enumerate(vendor_id=vendor_id,product_id=product_id))
+            hd = hidapi.Device(info=deviceInfo)
         data = create_dump(hd)
         if (mode == "dump"):
             with open(sys.argv[2],'wb') as f:
